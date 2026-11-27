@@ -421,10 +421,9 @@
       ${ta("fees_note", "Fees page note")}
       ${ta("admission_requirements", "Admission requirements", "One item per line.")}
       ${ta("entry_qualifications", "Entry qualifications / who can apply", "One item per line.")}
-      <button class="btn btn-navy" id="ssave">Save settings</button></form>`;
-    $("#sf").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const fd = Object.fromEntries(new FormData(e.target)); const rows = [];
+      <button type="button" class="btn btn-navy" id="ssave">Save settings</button></form>`;
+    const saveSettings = async () => {
+      const fd = Object.fromEntries(new FormData($("#sf"))); const rows = [];
       let map = (fd.map_embed_url || "").trim(); const mm = map.match(/src=["']([^"']+)["']/i); if (mm) map = mm[1];
       if (map && !/^https:\/\/(www\.google\.com|maps\.google\.com)\/maps/i.test(map)) { toast("The map link must be a Google Maps embed link.", "err"); return; }
       fd.map_embed_url = map;
@@ -448,7 +447,10 @@
       } finally {
         btn.disabled = false; btn.textContent = "Save settings";
       }
-    });
+    };
+    // works on button click, and on Enter inside a field
+    $("#ssave").onclick = (e) => { e.preventDefault(); saveSettings(); };
+    $("#sf").onsubmit = (e) => { e.preventDefault(); saveSettings(); };
   }
 
   // ---------- admin users ----------
