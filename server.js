@@ -181,9 +181,15 @@ function serveStatic(req, res, pathname) {
         send(res, 404, e2 ? "Not found" : buf, { "Content-Type": "text/html; charset=utf-8" }));
     }
     const ext = path.extname(file).toLowerCase();
-    const cache = ext === ".html" || file.endsWith(path.join("js", "config.js")) ? "no-cache" : "public, max-age=86400";
+    // html/js/css: browser must re-check on every load (so updates show immediately); images: cache 1 day
+    const revalidate = [".html", ".js", ".css"].includes(ext);
+    const cache = revalidate ? "no-cache" : "public, max-age=86400";
+    const lastMod = st.mtime.toUTCString();
+    if (revalidate && req.headers["if-modified-since"] && new Date(req.headers["if-modified-since"]) >= new Date(Math.floor(st.mtimeMs / 1000) * 1000)) {
+      res.writeHead(304, { "Cache-Control": cache, "Last-Modified": lastMod }); return res.end();
+    }
     res.writeHead(200, {
-      "Content-Type": MIME[ext] || "application/octet-stream", "Content-Length": st.size, "Cache-Control": cache,
+      "Content-Type": MIME[ext] || "application/octet-stream", "Content-Length": st.size, "Cache-Control": cache, "Last-Modified": lastMod,
       "X-Content-Type-Options": "nosniff", "X-Frame-Options": "SAMEORIGIN", "Referrer-Policy": "strict-origin-when-cross-origin",
     });
     if (req.method === "HEAD") return res.end();
