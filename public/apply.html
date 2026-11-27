@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apply Online – BIPS Student Application</title>
+<meta name="description" content="Apply online to Bingwa Institute of Professional Studies. Choose a course, upload your documents and get your application reference number instantly.">
+<link rel="icon" type="image/png" href="assets/favicon.png"><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero no-print"><div class="container"><h1>Student Application</h1><p>Complete the form below. Fields marked <span style="color:var(--gold)">*</span> are required.</p></div></div>
+<section class="section"><div class="container" style="max-width:900px">
+
+<div id="success" style="display:none" class="form-card">
+  <div id="printArea">
+    <div class="success">
+      <div class="tick">✓</div>
+      <h2>Application submitted successfully!</h2>
+      <p class="muted">Thank you for applying to Bingwa Institute of Professional Studies.</p>
+      <div class="refbox"><small>Your application reference number</small><b id="refNo"></b></div>
+      <div class="statuscard" style="text-align:left;max-width:520px;margin:0 auto 14px"><dl id="ackDetails"></dl></div>
+      <p class="muted" style="font-size:.9rem">Please keep this number safe. You will need it with your email address to check your application status.</p>
+      <p class="muted" id="mailNote" style="font-size:.9rem"></p>
+    </div>
+  </div>
+  <div class="center no-print" style="margin-top:14px">
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print acknowledgement</button>
+    <a class="btn btn-gold" id="trackLink" href="status.html">Track my application</a>
+    <a class="btn btn-outline" href="index.html">Back to home</a>
+  </div>
+</div>
+
+<form id="form" class="form-card" novalidate>
+  <div id="formAlert"></div>
+  <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off">
+
+  <div class="fieldset"><h3>1. Course</h3>
+    <div class="fld" data-f="course_id"><label>Course applied for <span class="req">*</span></label><select name="course_id" required><option value="">Loading courses…</option></select><span class="err"></span></div>
+    <div class="row">
+      <div class="fld" data-f="study_mode"><label>Preferred study mode <span class="req">*</span></label>
+        <select name="study_mode" required><option value="">Select…</option><option>Weekday</option><option>Weekend</option><option>Evening</option></select><span class="err"></span></div>
+      <div class="fld"><label>Application date</label><input type="text" id="appDate" readonly></div>
+    </div>
+  </div>
+
+  <div class="fieldset"><h3>2. Personal details</h3>
+    <div class="fld" data-f="full_name"><label>Full name <span class="req">*</span></label><input type="text" name="full_name" maxlength="150" autocomplete="name" required><span class="err"></span></div>
+    <div class="row r3">
+      <div class="fld" data-f="gender"><label>Gender <span class="req">*</span></label><select name="gender" required><option value="">Select…</option><option>Female</option><option>Male</option><option>Other</option></select><span class="err"></span></div>
+      <div class="fld" data-f="date_of_birth"><label>Date of birth <span class="req">*</span></label><input type="date" name="date_of_birth" required><span class="err"></span></div>
+      <div class="fld" data-f="nationality"><label>Nationality <span class="req">*</span></label><input type="text" name="nationality" value="Kenyan" maxlength="80" required><span class="err"></span></div>
+    </div>
+    <div class="row">
+      <div class="fld" data-f="email"><label>Email address <span class="req">*</span></label><input type="email" name="email" maxlength="200" autocomplete="email" required><span class="err"></span></div>
+      <div class="fld" data-f="phone"><label>Phone number <span class="req">*</span></label><input type="tel" name="phone" placeholder="07XX XXX XXX" maxlength="20" autocomplete="tel" required><span class="err"></span></div>
+    </div>
+    <div class="row">
+      <div class="fld" data-f="id_number"><label>National ID / Passport number <span class="req">*</span></label><input type="text" name="id_number" maxlength="40" required><span class="err"></span></div>
+      <div class="fld" data-f="county"><label>County <span class="req">*</span></label><select name="county" required><option value="">Select…</option></select><span class="err"></span></div>
+    </div>
+    <div class="fld" data-f="address"><label>Physical address <span class="req">*</span></label><input type="text" name="address" maxlength="300" placeholder="Town / estate / village" required><span class="err"></span></div>
+  </div>
+
+  <div class="fieldset"><h3>3. Academic background</h3>
+    <div class="row">
+      <div class="fld" data-f="highest_qualification"><label>Highest academic qualification <span class="req">*</span></label>
+        <select name="highest_qualification" required><option value="">Select…</option><option>KCPE</option><option>KCSE</option><option>Certificate</option><option>Diploma</option><option>Degree</option><option>Postgraduate</option><option>Other</option></select><span class="err"></span></div>
+      <div class="fld"><label>KCSE grade / mean grade <span class="hint">(where applicable)</span></label>
+        <select name="kcse_grade"><option value="">Not applicable</option><option>A</option><option>A-</option><option>B+</option><option>B</option><option>B-</option><option>C+</option><option>C</option><option>C-</option><option>D+</option><option>D</option><option>D-</option><option>E</option></select></div>
+    </div>
+    <div class="fld"><label>Previous institution attended</label><input type="text" name="previous_institution" maxlength="200"></div>
+  </div>
+
+  <div class="fieldset"><h3>4. Next of kin</h3>
+    <div class="row">
+      <div class="fld" data-f="next_of_kin_name"><label>Next of kin name <span class="req">*</span></label><input type="text" name="next_of_kin_name" maxlength="150" required><span class="err"></span></div>
+      <div class="fld" data-f="next_of_kin_phone"><label>Next of kin phone <span class="req">*</span></label><input type="tel" name="next_of_kin_phone" maxlength="20" required><span class="err"></span></div>
+    </div>
+    <div class="fld"><label>How did you hear about BIPS?</label>
+      <select name="heard_about"><option value="">Select…</option><option>Social media</option><option>Radio</option><option>Friend or family</option><option>Flyer / poster</option><option>Our website</option><option>Other</option></select></div>
+  </div>
+
+  <div class="fieldset"><h3>5. Upload documents</h3>
+    <p class="hint">Accepted: PDF, JPG or PNG – maximum 5 MB per file.</p>
+    <div class="grid g3" id="uploads">
+      <div class="upload" data-doc="id_copy"><div class="fld" style="margin:0"><label>ID / Passport copy <span class="req">*</span></label><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></div><div class="bar"><i></i></div><div class="fname"></div><span class="err" style="display:none;color:var(--bad);font-size:.8rem"></span></div>
+      <div class="upload" data-doc="certificates"><div class="fld" style="margin:0"><label>Certificates / results slip <span class="req">*</span></label><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></div><div class="bar"><i></i></div><div class="fname"></div><span class="err" style="display:none;color:var(--bad);font-size:.8rem"></span></div>
+      <div class="upload" data-doc="passport_photo"><div class="fld" style="margin:0"><label>Passport photo <span class="req">*</span></label><input type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png"></div><div class="bar"><i></i></div><div class="fname"></div><span class="err" style="display:none;color:var(--bad);font-size:.8rem"></span></div>
+    </div>
+  </div>
+
+  <div class="fld" data-f="declaration"><label class="check"><input type="checkbox" name="declaration"><span>I declare that the information provided is true and complete, and I agree to be contacted by BIPS about my application.</span></label><span class="err"></span></div>
+
+  <button class="btn btn-gold" id="submitBtn" type="submit" style="width:100%;padding:14px">Submit Application</button>
+</form>
+</div></section>
+</main>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script><script src="js/app.js"></script>
+<script>
+(async () => {
+  await pageInit("apply.html");
+  const form = $("#form");
+  $("#appDate").value = fmtDate(new Date());
+  form.county.innerHTML += KENYA_COUNTIES.map(c => `<option>${esc(c)}</option>`).join("");
+  form.date_of_birth.max = new Date().toISOString().slice(0, 10);
+
+  // courses
+  let courses = [];
+  if (CONFIGURED) {
+    const [{ data: depts }, { data: cs }] = await Promise.all([
+      sb.from("departments").select("id,name").order("sort_order"),
+      sb.from("courses").select("id,name,department_id,level,subcategory").eq("is_active", true).order("name"),
+    ]);
+    courses = cs || [];
+    form.course_id.innerHTML = `<option value="">Select a course…</option>` + (depts || []).map(d => {
+      const list = courses.filter(c => c.department_id === d.id);
+      return list.length ? `<optgroup label="${esc(d.name)}">${list.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.level)})</option>`).join("")}</optgroup>` : "";
+    }).join("");
+    const pre = new URLSearchParams(location.search).get("course");
+    if (pre && courses.some(c => c.id === pre)) form.course_id.value = pre;
+    // prefill when logged in
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.user?.email) form.email.value = session.user.email;
+  } else {
+    form.course_id.innerHTML = `<option value="">Supabase not configured</option>`;
+  }
+
+  // file handling
+  const MAX = 5 * 1024 * 1024, OK = { "application/pdf": "pdf", "image/jpeg": "jpg", "image/png": "png" };
+  const files = {};
+  $$("#uploads .upload").forEach(box => {
+    const input = $("input", box), doc = box.dataset.doc;
+    input.addEventListener("change", () => {
+      const f = input.files[0], err = $(".err", box);
+      box.classList.remove("invalid"); err.style.display = "none"; $(".fname", box).textContent = "";
+      delete files[doc]; if (!f) return;
+      const okType = OK[f.type] && (doc !== "passport_photo" || f.type !== "application/pdf");
+      if (!okType) { err.textContent = doc === "passport_photo" ? "Please upload a JPG or PNG image." : "Only PDF, JPG or PNG files are allowed."; err.style.display = "block"; input.value = ""; return; }
+      if (f.size > MAX) { err.textContent = "File is too large (max 5 MB)."; err.style.display = "block"; input.value = ""; return; }
+      files[doc] = f; $(".fname", box).textContent = "✓ " + f.name + " (" + (f.size / 1024).toFixed(0) + " KB)";
+    });
+  });
+
+  // validation
+  const rules = {
+    course_id: v => v ? "" : "Please choose a course.",
+    study_mode: v => v ? "" : "Select a study mode.",
+    full_name: v => v.trim().split(/\s+/).length >= 2 ? "" : "Enter your full name (at least two names).",
+    gender: v => v ? "" : "Select your gender.",
+    date_of_birth: v => { if (!v) return "Enter your date of birth."; const a = (Date.now() - new Date(v)) / 31557600000; return a < 14 || a > 90 ? "Enter a valid date of birth." : ""; },
+    nationality: v => v.trim() ? "" : "Enter your nationality.",
+    email: v => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v.trim()) ? "" : "Enter a valid email address.",
+    phone: v => /^\+?[0-9\s-]{9,15}$/.test(v.trim()) ? "" : "Enter a valid phone number.",
+    id_number: v => v.trim().length >= 5 ? "" : "Enter your ID or passport number.",
+    county: v => v ? "" : "Select your county.",
+    address: v => v.trim().length >= 3 ? "" : "Enter your physical address.",
+    highest_qualification: v => v ? "" : "Select your highest qualification.",
+    next_of_kin_name: v => v.trim().length >= 3 ? "" : "Enter your next of kin's name.",
+    next_of_kin_phone: v => /^\+?[0-9\s-]{9,15}$/.test(v.trim()) ? "" : "Enter a valid phone number.",
+  };
+  function validate() {
+    let first = null;
+    $$(".fld[data-f]").forEach(w => w.classList.remove("invalid"));
+    for (const [k, fn] of Object.entries(rules)) {
+      const msg = fn(form[k].value || "");
+      if (msg) { const w = $(`.fld[data-f="${k}"]`); w.classList.add("invalid"); $(".err", w).textContent = msg; first ||= w; }
+    }
+    if (!form.declaration.checked) { const w = $('.fld[data-f="declaration"]'); w.classList.add("invalid"); $(".err", w).textContent = "You must accept the declaration."; first ||= w; }
+    $$("#uploads .upload").forEach(box => {
+      if (!files[box.dataset.doc]) { box.classList.add("invalid"); const e = $(".err", box); e.textContent = "This document is required."; e.style.display = "block"; first ||= box; }
+    });
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+    return !first;
+  }
+
+  function upload(path, file, onProg, token) {
+    return new Promise((res, rej) => {
+      const x = new XMLHttpRequest();
+      x.open("POST", `${BIPS_CONFIG.SUPABASE_URL}/storage/v1/object/documents/${path.split("/").map(encodeURIComponent).join("/")}`);
+      x.setRequestHeader("apikey", BIPS_CONFIG.SUPABASE_ANON_KEY);
+      x.setRequestHeader("Authorization", "Bearer " + token);
+      x.setRequestHeader("Content-Type", file.type);
+      x.setRequestHeader("x-upsert", "false");
+      x.upload.onprogress = e => e.lengthComputable && onProg(e.loaded / e.total);
+      x.onload = () => x.status < 300 ? res() : rej(new Error("Upload failed (" + x.status + "). " + (x.responseText || "")));
+      x.onerror = () => rej(new Error("Network error while uploading. Check your connection and try again."));
+      x.send(file);
+    });
+  }
+
+  let busy = false;
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const alertBox = $("#formAlert"); alertBox.innerHTML = "";
+    if (form.website.value) return; // honeypot
+    if (!CONFIGURED) { alertBox.innerHTML = `<div class="alert alert-err">The site is not connected to Supabase yet. Server keys are not set.</div>`; return; }
+    if (!validate()) { alertBox.innerHTML = `<div class="alert alert-err">Please fix the highlighted fields and try again.</div>`; alertBox.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+    busy = true; const btn = $("#submitBtn"); btn.disabled = true; btn.textContent = "Checking…";
+    try {
+      const email = form.email.value.trim().toLowerCase();
+      const { data: dup, error: dErr } = await sb.rpc("application_exists", { p_email: email, p_course: form.course_id.value });
+      if (dErr) throw dErr;
+      if (dup) throw new Error("You have already applied for this course with this email address. Use 'Check Status' with your reference number.");
+
+      const id = crypto.randomUUID();
+      const { data: { session } } = await sb.auth.getSession();
+      const token = session?.access_token || BIPS_CONFIG.SUPABASE_ANON_KEY;
+      btn.textContent = "Uploading documents…";
+      const docs = [];
+      for (const box of $$("#uploads .upload")) {
+        const doc = box.dataset.doc, f = files[doc], bar = $(".bar", box), fill = $("i", bar);
+        bar.style.display = "block";
+        const path = `${id}/${doc}-${Date.now()}.${OK[f.type]}`;
+        await upload(path, f, p => fill.style.width = Math.round(p * 100) + "%", token);
+        fill.style.width = "100%";
+        docs.push({ doc_type: doc, file_path: path, file_name: f.name, file_size: f.size, mime_type: f.type });
+      }
+      btn.textContent = "Submitting…";
+      const payload = { id, documents: docs };
+      ["course_id", "study_mode", "full_name", "gender", "date_of_birth", "nationality", "email", "phone", "id_number", "county", "address",
+        "highest_qualification", "kcse_grade", "previous_institution", "next_of_kin_name", "next_of_kin_phone", "heard_about"]
+        .forEach(k => payload[k] = (form[k].value || "").trim());
+      const { data, error } = await sb.rpc("submit_application", { p: payload });
+      if (error) throw error;
+      const ref = data.reference_number;
+
+      // show success
+      $("#refNo").textContent = ref;
+      const course = courses.find(c => c.id === payload.course_id);
+      $("#ackDetails").innerHTML = `<dt>Name</dt><dd>${esc(payload.full_name)}</dd><dt>Course</dt><dd>${esc(course?.name || "")}</dd>
+        <dt>Email</dt><dd>${esc(payload.email)}</dd><dt>Phone</dt><dd>${esc(payload.phone)}</dd><dt>Submitted</dt><dd>${fmtDate(new Date(), true)}</dd><dt>Status</dt><dd>Pending</dd>`;
+      $("#trackLink").href = "status.html?ref=" + encodeURIComponent(ref);
+      form.style.display = "none"; $("#success").style.display = "block";
+      $(".page-hero").style.display = "none"; window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // confirmation email (non-blocking)
+      sendEmail({ type: "confirmation", reference_number: ref, email })
+        .then(({ data: r, error: e2 }) => { $("#mailNote").textContent = (!e2 && r?.sent) ? "A confirmation email has been sent to " + email + "." : ""; })
+        .catch(() => {});
+    } catch (err) {
+      alertBox.innerHTML = `<div class="alert alert-err">${esc((err.message || String(err)).replace(/^DUPLICATE:\s*/, ""))}</div>`;
+      alertBox.scrollIntoView({ behavior: "smooth", block: "center" });
+      btn.disabled = false; btn.textContent = "Submit Application"; busy = false;
+      $$("#uploads .bar").forEach(b => { b.style.display = "none"; $("i", b).style.width = "0"; });
+    }
+  });
+})();
+</script>
+</body></html>

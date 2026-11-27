@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Departments & Training Areas – BIPS</title>
+<meta name="description" content="Training departments at Bingwa Institute of Professional Studies: media, ICT, business and professional short courses.">
+<link rel="icon" type="image/png" href="assets/favicon.png"><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero"><div class="container"><h1>Departments & Training Areas</h1><p>Practical training across media, technology, business and professional skills.</p></div></div>
+<section class="section"><div class="container" id="list"><div class="loading"><div class="spinner"></div>Loading…</div></div></section>
+</main>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script><script src="js/app.js"></script>
+<script>
+(async () => {
+  await pageInit("departments.html");
+  if (!CONFIGURED) { $("#list").innerHTML = ""; return; }
+  const [{ data: depts }, { data: courses }] = await Promise.all([
+    sb.from("departments").select("*").order("sort_order"),
+    sb.from("courses").select("id,name,department_id,subcategory,level").eq("is_active", true).order("name"),
+  ]);
+  const imgs = { "mass-communication": "dept-media.jpg", "information-technology": "dept-ict.jpg", "business-management": "dept-business.jpg", "professional-short-courses": "dept-short.jpg" };
+  $("#list").innerHTML = (depts || []).map(d => {
+    const cs = (courses || []).filter(c => c.department_id === d.id);
+    const groups = {};
+    cs.forEach(c => (groups[c.subcategory || ""] ||= []).push(c));
+    const body = Object.entries(groups).map(([sub, arr]) => `
+      ${sub ? `<h4 style="margin:14px 0 6px;color:#7a5200">${esc(sub)}</h4>` : ""}
+      <ul class="checklist">${arr.map(c => `<li><a href="apply.html?course=${c.id}">${esc(c.name)}</a></li>`).join("")}</ul>`).join("");
+    return `<div class="card" style="margin-bottom:28px"><div class="grid" style="grid-template-columns:minmax(0,320px) 1fr;gap:0">
+      <img src="assets/${imgs[d.slug] || "dept-short.jpg"}" alt="" style="width:100%;height:100%;min-height:200px;object-fit:cover">
+      <div class="card-body" style="padding:24px"><h2>${esc(d.name)}</h2><p class="muted">${esc(d.description || "")}</p>${body}
+        <a class="btn btn-navy btn-sm" href="courses.html?dept=${d.id}">View courses & fees</a></div></div></div>`;
+  }).join("") || `<div class="empty">Departments coming soon.</div>`;
+  const st = document.createElement("style");
+  st.textContent = "@media(max-width:760px){#list .card .grid{grid-template-columns:1fr!important}}"; document.head.appendChild(st);
+})();
+</script>
+</body></html>

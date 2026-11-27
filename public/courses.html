@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Courses & Programmes – BIPS</title>
+<meta name="description" content="Browse all courses at Bingwa Institute of Professional Studies: ICT, business, journalism, media and professional short courses. Apply online.">
+<link rel="icon" type="image/png" href="assets/favicon.png"><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero"><div class="container"><h1>Courses & Programmes</h1><p>Certificate, Diploma, Higher Diploma and Short Courses – find the right skill for you.</p></div></div>
+<section class="section"><div class="container">
+  <div class="filters">
+    <input type="search" id="q" placeholder="Search courses…">
+    <select id="dept"><option value="">All departments</option></select>
+    <select id="level"><option value="">All levels</option><option>Short Course</option><option>Certificate</option><option>Diploma</option><option>Higher Diploma</option></select>
+    <select id="sub"><option value="">All short-course areas</option></select>
+  </div>
+  <p class="muted" id="count"></p>
+  <div class="grid g3" id="list"><div style="grid-column:1/-1">Loading…</div></div>
+</div></section>
+</main>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script><script src="js/app.js"></script>
+<script>
+(async () => {
+  await pageInit("courses.html");
+  if (!CONFIGURED) { $("#list").innerHTML = ""; return; }
+  const [{ data: depts }, { data: courses, error }] = await Promise.all([
+    sb.from("departments").select("*").order("sort_order"),
+    sb.from("courses").select("*").eq("is_active", true).order("name"),
+  ]);
+  if (error) { $("#list").innerHTML = `<div class="alert alert-err" style="grid-column:1/-1">Could not load courses: ${esc(error.message)}</div>`; return; }
+  const dn = Object.fromEntries((depts || []).map(d => [d.id, d.name]));
+  $("#dept").innerHTML += (depts || []).map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join("");
+  const subs = [...new Set((courses || []).map(c => c.subcategory).filter(Boolean))];
+  $("#sub").innerHTML += subs.map(s => `<option>${esc(s)}</option>`).join("");
+  const params = new URLSearchParams(location.search);
+  if (params.get("dept")) $("#dept").value = params.get("dept");
+  if (params.get("level")) $("#level").value = params.get("level");
+  function render() {
+    const q = $("#q").value.trim().toLowerCase(), d = $("#dept").value, l = $("#level").value, s = $("#sub").value;
+    const f = (courses || []).filter(c => (!d || c.department_id === d) && (!l || c.level === l) && (!s || c.subcategory === s) &&
+      (!q || (c.name + " " + (c.description || "") + " " + (c.subcategory || "")).toLowerCase().includes(q)));
+    $("#count").textContent = f.length + " course" + (f.length === 1 ? "" : "s") + " found";
+    $("#list").innerHTML = f.map(c => courseCard(c, dn[c.department_id])).join("") || `<div class="empty" style="grid-column:1/-1">No courses match your filters.</div>`;
+  }
+  ["q", "dept", "level", "sub"].forEach(id => $("#" + id).addEventListener("input", render));
+  render();
+})();
+</script>
+</body></html>
