@@ -6,7 +6,7 @@
 // NEVER put the service_role key in this file.
 // =====================================================================
 window.BIPS_CONFIG = {
-  SUPABASE_URL: "https://YOUR-PROJECT-REF.supabase.co",
-  SUPABASE_ANON_KEY: "YOUR-ANON-PUBLIC-KEY",
+  SUPABASE_URL: "https://gfoyaqztbbbuvrcstrhr.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_64HcCunU_iPzN1BZwby0ow_AW3Ktrsq",
   SITE_NAME: "Bingwa Institute of Professional Studies"
 };
