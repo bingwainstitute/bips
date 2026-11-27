@@ -431,9 +431,23 @@
       for (const k of ["facebook", "instagram", "twitter", "tiktok", "youtube"]) if (fd[k] && !/^https?:\/\//i.test(fd[k])) { toast(`${k}: link must start with https://`, "err"); return; }
       for (const [key, value] of Object.entries(fd)) rows.push({ key, value: String(value).trim(), updated_at: new Date().toISOString() });
       const btn = $("#ssave"); btn.disabled = true; btn.textContent = "Saving…";
-      const { error } = await sb.from("site_settings").upsert(rows, { onConflict: "key" });
-      btn.disabled = false; btn.textContent = "Save settings";
-      if (error) errToast(error); else toast("Settings saved. The website now shows your new details.", "ok");
+      let note = $("#snote"); if (!note) { note = document.createElement("div"); note.id = "snote"; note.style.marginTop = "12px"; btn.after(note); }
+      note.innerHTML = "";
+      try {
+        const req = sb.from("site_settings").upsert(rows, { onConflict: "key" }).select("key");
+        const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("Timed out. Refresh the page (F5), log in again and retry.")), 20000));
+        const { data: saved, error } = await Promise.race([req, timeout]);
+        if (error) throw error;
+        if (!saved || !saved.length) throw new Error("Nothing was saved. Your session may have expired: log out, log in and try again.");
+        toast("Settings saved. The website now shows your new details.", "ok");
+        note.innerHTML = `<div class="alert alert-ok">Saved at ${new Date().toLocaleTimeString()}.</div>`;
+      } catch (err) {
+        console.error("settings save failed", err);
+        toast(err.message || String(err), "err");
+        note.innerHTML = `<div class="alert alert-err">Not saved: ${esc(err.message || err)}</div>`;
+      } finally {
+        btn.disabled = false; btn.textContent = "Save settings";
+      }
     });
   }
 
