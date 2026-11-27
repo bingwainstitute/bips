@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check Application Status – BIPS</title>
+<meta name="description" content="Check the status of your Bingwa Institute of Professional Studies application using your reference number and email.">
+<link rel="icon" type="image/png" href="assets/favicon.png"><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site-header"></div>
+<main>
+<div class="page-hero"><div class="container"><h1>Check Application Status</h1><p>Track your application using your reference number, or log in to see all your applications.</p></div></div>
+<section class="section"><div class="container" style="max-width:760px">
+  <div class="tabs"><button class="on" data-t="ref">Reference number</button><button data-t="acct">Student login</button></div>
+
+  <div id="t-ref">
+    <div class="form-card">
+      <div id="refAlert"></div>
+      <form id="refForm" novalidate>
+        <div class="fld"><label>Application reference number</label><input type="text" id="ref" placeholder="BIPS-2026-00001" required></div>
+        <div class="fld"><label>Email used in your application</label><input type="email" id="em" required></div>
+        <button class="btn btn-navy" id="refBtn">Check status</button>
+      </form>
+      <div id="refResult"></div>
+    </div>
+  </div>
+
+  <div id="t-acct" style="display:none">
+    <div class="form-card">
+      <div id="authAlert"></div>
+      <div id="loggedOut">
+        <p class="muted">Optional: create a student account to see all your applications in one place. Use the same email you applied with.</p>
+        <form id="authForm" novalidate>
+          <div class="fld"><label>Email</label><input type="email" id="aEmail" required></div>
+          <div class="fld"><label>Password <span class="hint">(min. 8 characters)</span></label><input type="password" id="aPass" required minlength="8"></div>
+          <button class="btn btn-navy" id="loginBtn" type="submit">Log in</button>
+          <button class="btn btn-outline" id="signupBtn" type="button">Create account</button>
+          <button class="btn btn-sm" id="forgotBtn" type="button" style="background:none;color:var(--muted)">Forgot password?</button>
+        </form>
+      </div>
+      <div id="loggedIn" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px"><b id="who"></b><button class="btn btn-outline btn-sm" id="logout">Log out</button></div>
+        <div id="myApps" style="margin-top:14px"></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+</main>
+<div id="site-footer"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="js/config.js"></script><script src="js/app.js"></script>
+<script>
+(async () => {
+  await pageInit("status.html");
+  const card = (a) => `<div class="statuscard"><dl>
+    <dt>Reference</dt><dd>${esc(a.reference_number)}</dd><dt>Applicant</dt><dd>${esc(a.full_name)}</dd>
+    <dt>Course</dt><dd>${esc(a.course_name)}</dd>
+    <dt>Status</dt><dd><span class="badge st-${esc(a.status)}">${esc(a.status)}</span></dd>
+    <dt>Applied on</dt><dd>${fmtDate(a.created_at)}</dd><dt>Last update</dt><dd>${fmtDate(a.updated_at, true)}</dd>
+    ${a.admin_comments ? `<dt>Message from admissions</dt><dd style="white-space:pre-line">${esc(a.admin_comments)}</dd>` : ""}</dl></div>`;
+
+  // tabs
+  $$(".tabs button").forEach(b => b.onclick = () => {
+    $$(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+    $("#t-ref").style.display = b.dataset.t === "ref" ? "" : "none";
+    $("#t-acct").style.display = b.dataset.t === "acct" ? "" : "none";
+  });
+  const q = new URLSearchParams(location.search);
+  if (q.get("ref")) $("#ref").value = q.get("ref");
+
+  $("#refForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const ref = $("#ref").value.trim(), em = $("#em").value.trim();
+    if (!ref || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { $("#refAlert").innerHTML = `<div class="alert alert-err">Enter your reference number and a valid email.</div>`; return; }
+    $("#refAlert").innerHTML = ""; $("#refBtn").disabled = true; $("#refBtn").textContent = "Checking…";
+    const { data, error } = await sb.rpc("check_application_status", { p_ref: ref, p_email: em });
+    $("#refBtn").disabled = false; $("#refBtn").textContent = "Check status";
+    if (error) { $("#refAlert").innerHTML = `<div class="alert alert-err">${esc(error.message)}</div>`; return; }
+    $("#refResult").innerHTML = data && data.length ? card(data[0]) : `<div class="alert alert-err" style="margin-top:16px">No application found with that reference number and email. Please check and try again.</div>`;
+  });
+
+  // student auth
+  const showAuth = async () => {
+    const { data: { session } } = await sb.auth.getSession();
+    $("#loggedOut").style.display = session ? "none" : "";
+    $("#loggedIn").style.display = session ? "" : "none";
+    if (!session) return;
+    $("#who").textContent = session.user.email;
+    $("#myApps").innerHTML = loadingHTML();
+    const { data, error } = await sb.from("applications").select("*").eq("user_id", session.user.id).order("created_at", { ascending: false });
+    if (error) { $("#myApps").innerHTML = `<div class="alert alert-err">${esc(error.message)}</div>`; return; }
+    $("#myApps").innerHTML = (data || []).map(card).join("") || `<div class="empty">You have no applications linked to this account yet. <a href="apply.html">Apply now</a>.</div>`;
+  };
+  const creds = () => {
+    const email = $("#aEmail").value.trim(), password = $("#aPass").value;
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || password.length < 8) { $("#authAlert").innerHTML = `<div class="alert alert-err">Enter a valid email and a password of at least 8 characters.</div>`; return null; }
+    $("#authAlert").innerHTML = ""; return { email, password };
+  };
+  $("#authForm").addEventListener("submit", async (e) => {
+    e.preventDefault(); const c = creds(); if (!c) return;
+    const { error } = await sb.auth.signInWithPassword(c);
+    if (error) { $("#authAlert").innerHTML = `<div class="alert alert-err">${esc(error.message)}</div>`; return; }
+    showAuth();
+  });
+  $("#signupBtn").onclick = async () => {
+    const c = creds(); if (!c) return;
+    const { data, error } = await sb.auth.signUp(c);
+    if (error) { $("#authAlert").innerHTML = `<div class="alert alert-err">${esc(error.message)}</div>`; return; }
+    $("#authAlert").innerHTML = data.session ? "" : `<div class="alert alert-ok">Account created. Check your email to confirm it, then log in.</div>`;
+    if (data.session) showAuth();
+  };
+  $("#forgotBtn").onclick = async () => {
+    const email = $("#aEmail").value.trim();
+    if (!email) { $("#authAlert").innerHTML = `<div class="alert alert-err">Enter your email first.</div>`; return; }
+    const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin + location.pathname });
+    $("#authAlert").innerHTML = error ? `<div class="alert alert-err">${esc(error.message)}</div>` : `<div class="alert alert-ok">Password reset email sent (if the account exists).</div>`;
+  };
+  $("#logout").onclick = async () => { await sb.auth.signOut(); showAuth(); };
+  if (CONFIGURED) showAuth();
+})();
+</script>
+</body></html>
